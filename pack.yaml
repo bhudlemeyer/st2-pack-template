@@ -1,8 +1,8 @@
 ### Place information about your pack version here.
 ---
-name: st2-pack-template
-description: A blank pack template!
+name: ansibletest
+description: ansible
 version: 0.1.0
-author: StackStorm Stanley
-email: stanley@stackstorm.com
+author: brandon
+email: stanley@gmail.stuff
 
