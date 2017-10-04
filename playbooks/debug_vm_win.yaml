@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  vars_files:
+  - /opt/stackstorm/packs/ansibletest/playbooks/vars/debug-vars.yml
+  - /opt/stackstorm/packs/ansibletest/playbooks/vars/debug-vm-win.yml
+
+  roles:
+  - debug-vm

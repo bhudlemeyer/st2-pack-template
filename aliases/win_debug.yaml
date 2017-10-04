@@ -1,15 +1,14 @@
 ---
-name: chatops.ansible_package_update
-action_ref: st2_chatops_aliases.update_package
-description: Update package on remote hosts
+name: chatops.ansible_win_debug
+action_ref: st2-chatops-aliases.win_debug
+description: deploy windows debug vms
 formats:
-  - display: "update <package> on <hosts>"
+  - display: "Deploying windows debug vms"
     representation:
-      - "update {{ package }} on {{ hosts }}"
-      - "upgrade {{ package }} on {{ hosts }}"
+      - "debug win {{hosts=localhost}}"
 result:
   format: |
-    Update package `{{ execution.parameters.package }}` on `{{ execution.parameters.hosts }}` host(s): {~}
+    deploying debug windows vms : {~}
     {% if execution.result.stderr %}
     *Exit Status*: `{{ execution.result.return_code }}`
     *Stderr:* ```{{ execution.result.stderr }}```

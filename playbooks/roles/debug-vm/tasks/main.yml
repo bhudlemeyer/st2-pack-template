@@ -1,0 +1,118 @@
+---
+  - name: Create tenant resource pool
+    vmware_resource_pool:
+      hostname: "{{ vc_hostname }}"
+      validate_certs: False
+      username: "{{ vc_username }}"
+      password: "{{ vc_password }}"
+      datacenter: "{{ vc_datacenter }}"
+      cluster: "{{ item.ci_cluster }}"
+      resource_pool: "{{ item.vm_resource_pool }}"
+      mem_shares: normal
+      mem_limit: -1
+      mem_reservation: 0
+      mem_expandable_reservations: True
+      cpu_shares: normal
+      cpu_limit: -1
+      cpu_reservation: 0
+      cpu_expandable_reservations: True
+      state: present
+    delegate_to: 127.0.0.1
+    with_items:
+      - "{{ vms }}"
+
+  - name: Create VM folder
+    vsphere_create_folder:
+      host: "{{ vc_hostname }}"
+      login: "{{ vc_username }}"
+      password: "{{ vc_password }}"
+      folder_name: "{{ folder_name }}"
+      datacenter_name: "{{ vc_datacenter }}"
+      parent_folder_name: ""
+
+  - name: Power-off vm if present
+    ignore_errors: yes
+    vsphere_guest:
+      vcenter_hostname: "{{ vc_hostname }}"
+      username: "{{ vc_username }}"
+      password: "{{ vc_password }}"
+      guest: "{{ item.name }}"
+      state: powered_off
+      force: yes
+      cluster: "{{ item.ci_cluster }}"
+      resource_pool: "{{ item.vm_resource_pool }}"
+      validate_certs: no
+    with_items:
+      - "{{ vms }}"
+
+  - name: destory vm if present
+    vsphere_guest:
+      vcenter_hostname: "{{ vc_hostname }}"
+      username: "{{ vc_username }}"
+      password: "{{ vc_password }}"
+      guest: "{{ item.name }}"
+      state: absent
+      force: yes
+      cluster: "{{ item.ci_cluster }}"
+      resource_pool: "{{ item.vm_resource_pool }}"
+      validate_certs: no
+    with_items:
+      - "{{ vms }}"
+
+  - name: Deploy VM from template
+    vmware_guest:
+      hostname: "{{ vc_hostname }}"
+      username: "{{ vc_username }}"
+      password: "{{ vc_password }}"
+      datacenter: "{{ vc_datacenter }}"
+      name: "{{ item.name }}"
+      template: "{{ item.template_src }}"
+      cluster: "{{ item.ci_cluster }}"
+      state: poweredon
+      resource_pool: "{{ item.vm_resource_pool }}"
+      validate_certs: no
+      folder: "{{ folder_name }}"
+      networks:
+      - name: "{{ item.vm_network }}" 
+        ip: "{{ item.vm_ip }}"
+        netmask: "{{ item.vm_nm }}"
+        gateway: "{{ item.vm_gw }}"
+        domain: "{{ item.dns_domain }}"
+        type: static
+      customization:
+        dns_servers:
+        - 100.72.1.15
+        - 100.72.1.16
+        domain: "{{ item.dns_domain }}"
+    with_items:
+      - "{{ vms }}"
+#  - name: Deploy VM from template
+#    vmware_guest:
+#      vcenter_hostname: "{{ vc_hostname }}"
+#      username: "{{ vc_username }}"
+#      password: "{{ vc_password }}"
+#      guest: "{{ item.name }}"
+#      from_template: yes
+#      template_src: "{{ item.template_src }}"
+#      cluster: "{{ item.ci_cluster }}"
+#      customize: True
+#      domain: "{{ item.dns_domain }}"
+#      dns_servers: ["{{ item.dns_servers}}"]
+#      ips: "{{ item.vm_ip }}"
+#      networks:
+#        "{{ item.vm_nicnetwork }}":
+#          network: "{{ item.vm_network }}"
+#          gateway: "{{ item.vm_gw }}"
+#      vm_nic: 
+#        nic1:
+#         type: vmxnet3
+#         network: "{{ item.vm_network }}"
+#         network_type: vds
+#      power_on_after_clone: yes
+#      resource_pool: "/Resources/{{ item.vm_resource_pool }}"
+#      validate_certs: no
+#      vm_extra_config:
+#        folder: "{{ folder_name }}"
+#        #ip_address: "{{ item.vm_ip }}"
+#    with_items:
+#      - "{{ vms }}"
