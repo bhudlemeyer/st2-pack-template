@@ -1,9 +1,9 @@
 ---
 name: win_debug
-action_ref: ansibletest-actions.win_debug
+action_ref: ansibletest.win_debug
 description: deploy windows debug vms
 formats:
-  - display: "Deploying windows debug vms"
+  - display: "debug"
     representation:
       - "debug win {{hosts=localhost}}"
 result:
