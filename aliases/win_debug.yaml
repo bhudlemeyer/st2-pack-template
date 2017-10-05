@@ -1,6 +1,6 @@
 ---
-name: chatops.ansible_win_debug
-action_ref: st2-chatops-aliases.win_debug
+name: win_debug
+action_ref: ansibletest-actions.win_debug
 description: deploy windows debug vms
 formats:
   - display: "Deploying windows debug vms"
